@@ -156,19 +156,19 @@ $
 == Univalence Generally
 
 $
-  {attach(arrow.t arrow.b, br: UU) in Tm(Gamma. Id(U, A, B), C) | u } iso {star} 
+  {attach(arrow.t arrow.b, br: B) in Tm(Gamma. Id(U, A, B), C) | u } iso {star} 
 $
-- we want $attach(arrow.t, br: U)$ to brings proofs in $A$ to $B$, and  $attach(arrow.b, br: U)$ vice versa #pause
+- we want $attach(arrow.t, br: B)$ to brings proofs in $A$ to $B$, and  $attach(arrow.b, br: B)$ vice versa #pause
 $
   u : C(Id(U,A,B),C(A,B))
 $
-- $U$ is univalent when $attach(arrow.t arrow.b, br: U)$ induces $u$ which is also a term of $C$
+- $U$ is univalent when $attach(arrow.t arrow.b, br: B)$ induces $u$ which is also a term of $C$
 #figure(
   diagram(
     cell-size: 10mm,
     $
       A
-  #edge("rr", $attach(arrow.t arrow.b, br: U)$, "<-->", shift: 0pt, label-anchor: "south", label-sep: 0em, bend: 30deg)
+  #edge("rr", $attach(arrow.t arrow.b, br: B)$, "<-->", shift: 0pt, label-anchor: "south", label-sep: 0em, bend: 30deg)
   #edge("rr", $p: Id_U$, "->", shift: 0pt, label-anchor: "north", label-sep: 0em, bend: -30deg)
   #edge((1,-0.25),(1,0.25), $u$, "<-->")
   & &
@@ -367,22 +367,169 @@ $
 
 == Proof Transfer In General
 
-- relation
-- proof transfer from $T_1$ to $T_2$; $w$
-- synthesis / anticipation problem
+- given a type former $V : A -> UU$
+- given the relations $R_T : A -> B -> UU$ and $R_UU : UU -> UU -> UU$
+- we synthesize $W : B -> UU$ such that the following holds
+$
+  Gamma hy w : Pi(a : A, b : B, R_T (a, b) -> R_UU (V a, W b))
+$
+#align(center)[_think if relation between terms of $A$ and $B$ holds, then types indexed on them; $V$ and $W$ also holds in relation_]
+#pause
+
+== Example $N, bb(N)$
+
+
+*different types*; _type equivalence_
+#figure(grid(columns: 2, align: (center + horizon, center + horizon),
+$
+  A =& bb(N) times (bb(N) -> bb(N)) \
+  V =& Pi(X : bb(N), Pi(P : bb(N) -> UU, \
+  &P(X.1) -> \
+  &Pi(n : bb(N), P(n) -> P(X.2(n)) -> \
+  &Pi(n : bb(N), P(n)))))
+$, pause,
+$
+  B =& N times (N -> N) \
+  W =& Pi(X : N, Pi(P : N -> UU, \
+  &P(X.1) -> \
+  &Pi(n : N, P(n) -> P(X.2(n)) -> \
+  &Pi(n : N, P(n)))))
+$
+))
+#align(center)[_$R_T$ is a type equivalence between $bb(N)$ and $N$ transporting $V(a)$ to $W(a)$ along this equivalence_]
+
+#pagebreak()
+*common interface*; _representation independence_
+$
+  A = B =& Sigma(upright(N) : UU, upright(N) times (upright(N) -> upright(N))) \
+  V = W =& Pi(X : A, Pi(P : X.1 -> UU, \
+  &P(X.2) -> \
+  &Pi(n : X.1, P(n) -> P(X.3(n))) -> \
+  &Pi(n : X.1, P(n))))
+$
+#align(center)[_$R_T$ characterizes isomorphic instances of the structure_]
+#pagebreak()
+
+*trivial*
+$
+  W =& Pi(X : N, Pi(P : bb(N) -> UU, \
+  &P(attach(arrow.t, br: bb(N))(X.1)) -> \
+  &Pi(n : bb(N), P(n) -> P(attach(arrow.t, br: bb(N))(X.2(attach(arrow.b, br: bb(N))(n)))) -> \
+  &Pi(n : bb(N), P(n)))))
+$
+- remember $W$ is indexed on $N$
+- composing with $attach(arrow.t arrow.b, br: bb(N))$ can only propagate structural arguments
+- this ignores additional proofs of program equivalences
+- this was the concluding solution we had in the previous presentation
+
+== Proof Transfer Strategies
+
+- Proof transfer automation consist of a meta-program that computes $W$ and $w$ by induction on the structure of $V$ #pause
+- they differ by the relations they can express #pause
+- *generalized rewriting* provide support to setoid based formulations for homogeneous functional relations; $A=B$ #pause
+- *`CoqEAL`* library provide support to refinements specialized to heterogeneous functional relations; $A != B$, in quantifier free type formers #pause
+- we now discuss transfer methods for dependent types and heterogeneous relations in general :)
 
 == Parametricity Translation
 
-- logical relation $[| . |]$
-- logical relation by structural induction on typing judgements; abstraction theorem
-- context translation
-- term translation
-- univalent parametricity is abstraction theorem for heterogeneous logical relations
-- typing judgement under univalence $hyu$
-- restating the abstraction theorem $hyu [UU_i] : [| UU_(i+1) |] UU_i UU_i$
-- term translation $[.]$ where $"rel"([T]) = [|T|]$
+*notation*
+- given a type $T$, we notate $[|T|]$ as a logical relation #pause
+- given a term $t$ we notate $t'$ as a term where every variable $x$ in $t$ is replaced with a fresh variable $x'$ #pause
 
-= Symmetric Univalence
+*parametricity from abstraction theorem*
+$
+  Gamma hy t : T ==> &[|Gamma |] hy t : T and \
+  &[|Gamma |] hy t' : T' and \
+  &[|Gamma |] hy [|t|] : [|T|] t t'
+$
+#pause
+presupposing
+$
+  hy [| UU_i |] : [| UU_(i+1) |] UU_i UU_i
+$
+
+#pagebreak()
+*context raw parametricity translation*
+$
+  [| angle.l angle.r |] &= angle.l angle.r \
+  [| Gamma, x:A |] &= [| Gamma |], x : A, x' : A', x_R : [|A|] x x'
+$
+#pause
+*term raw parametricity translation*
+$
+  [| UU_i |] &= lambda A, A'. A -> A' -> UU_i \
+  [| x |] &= x_R
+$
+#pause
+*$Pi$ term raw parametricity translation*
+$
+  [| A B |] &= [| A |] B B' [| B |] \
+  [| lambda x : A, t |] &= lambda x : A, x' : A', x_R : [| A |] x x'. [| t |] \
+  [| Pi(x : A, B) |] &= lambda f, f'. Pi(x : A, x' : A', x_R : [|A|]x x', [|B|]f(x)f'(x'))
+$
+
+== Univalent Parametricity
+
+#figure(
+  diagram(
+    cell-size: 10mm,
+    $
+      a
+  #edge("rr", $R$, "<->", shift: 0pt, label-anchor: "south", label-sep: 0em, bend: 30deg)
+  #edge("rr", $p : Id(A,a,attach(arrow.b, br: e)(b))$, "<->", shift: 0pt, label-anchor: "north", label-sep: 0em, bend: -30deg)
+  #edge((1,-0.25),(1,0.25), $[| UU_i |]$, "<-->")
+  & &
+b
+    $,
+  ),
+)
+$
+  [| UU_i |] A B = Sigma(R : A -> B -> UU_i, e : A equiv B, Pi(a : A, b : B, R a b equiv Id(A, a, attach(arrow.b, br: e)(b))))
+$
+#align(center)[_ $A$ and $B$ are related on $[| UU_i |]$ if for some $R$ and $e$, $R$ is equivalent to $Id(A,a, attach(arrow.b, br:e)(b))$_]
+#pause
+#figure(
+  diagram(
+    cell-size: 10mm,
+    $
+      A
+  #edge("rr", $attach(arrow.t arrow.b, br: e)$, "<-->", shift: 0pt, label-anchor: "south", label-sep: 0em, bend: 30deg)
+  #edge("rr", $[| UU_i |]$, "<-->", shift: 0pt, label-anchor: "north", label-sep: 0em, bend: -30deg)
+  #edge((1,-0.25),(1,0.25), $u$, "<-->")
+  & &
+B
+    $,
+  ),
+)
+$
+  [| UU_i |] A B equiv (A equiv B)
+$
+
+#pagebreak()
+
+- univalent parametricity is abstraction theorem for heterogeneous logical relations
+- with the above $[| dot |]$ is now called the univalent parametricity translation
+
+== Term Translation
+
+- for any term $T : UU_i$ thats also a type, the translation of $T$ as a term is $[T]$ #pause
+- it is a $Sigma$ term with a relation with additional data prescribed by $[|UU_i|]$
+- in other words: $"rel"([T]) = [|T|]$, where $"rel"$ projects the relation #pause
+- we notate $hyu$ as a typing judgement assuming univalence
+
+*abstraction theorem for univalent parametricity translation*
+$
+  Gamma hy t : T ==> [| Gamma |] hyu [t] : [| T |] t t'
+$
+#pause
+presupposes
+$
+  hyu [ UU_i ] : [| UU_(i+1) |] UU_i UU_i \
+  hyu Pi(A : UU_i, B : UU_i, [| UU_i |] A B equiv Id(UU_i, A, B)) \
+  "rel"([ UU_i ]) \u{2261} [| UU_i |]
+$
+
+= Type Equivalence in Kit
 
 == 
 
