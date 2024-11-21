@@ -93,7 +93,7 @@
   // config-common(handout: true),
   config-info(
     title: [Equality and Isomorphisms in Type Theory],
-    subtitle: [HoTT to Parametric Univalence and Beyond; `Trocq`],
+    subtitle: [HoTT to Parametric Univalence and Beyond; `Trocq` @trocq],
     author: [Abdul Haliq],
     date: datetime.today(),
     institution: text(
@@ -158,7 +158,7 @@ $
 $
   {attach(arrow.t arrow.b, br: B) in Tm(Gamma. Id(U, A, B), C) | u } iso {star} 
 $
-- we want $attach(arrow.t, br: B)$ to brings proofs in $A$ to $B$, and  $attach(arrow.b, br: B)$ vice versa #pause
+- we want $attach(arrow.t, br: B)$ to map proofs in $A$ to $B$, and  $attach(arrow.b, br: B)$ vice versa #pause
 $
   u : C(Id(U,A,B),C(A,B))
 $
@@ -374,11 +374,12 @@ $
   Gamma hy w : Pi(a : A, b : B, R_T (a, b) -> R_UU (V a, W b))
 $
 #align(center)[_think if relation between terms of $A$ and $B$ holds, then types indexed on them; $V$ and $W$ also holds in relation_]
-#pause
 
 == Example $N, bb(N)$
 
-
+$
+  Gamma hy w : Pi(a : A, b : B, R_T (a, b) -> R_UU (V a, W b))
+$
 *different types*; _type equivalence_
 #figure(grid(columns: 2, align: (center + horizon, center + horizon),
 $
@@ -399,6 +400,10 @@ $
 #align(center)[_$R_T$ is a type equivalence between $bb(N)$ and $N$ transporting $V(a)$ to $W(a)$ along this equivalence_]
 
 #pagebreak()
+
+$
+  Gamma hy w : Pi(a : A, b : B, R_T (a, b) -> R_UU (V a, W b))
+$
 *common interface*; _representation independence_
 $
   A = B =& Sigma(upright(N) : UU, upright(N) times (upright(N) -> upright(N))) \
@@ -410,6 +415,9 @@ $
 #align(center)[_$R_T$ characterizes isomorphic instances of the structure_]
 #pagebreak()
 
+$
+  Gamma hy w : Pi(a : A, b : B, R_T (a, b) -> R_UU (V a, W b))
+$
 *trivial*
 $
   W =& Pi(X : N, Pi(P : bb(N) -> UU, \
@@ -430,10 +438,30 @@ $
 - *`CoqEAL`* library provide support to refinements specialized to heterogeneous functional relations; $A != B$, in quantifier free type formers #pause
 - we now discuss transfer methods for dependent types and heterogeneous relations in general :)
 
+== Recap Logical Relations
+
+- we have seen logical relations for safety of System F #pause
+- the relations are unary; predicates, e.g. $P$ #pause
+- safety then is a predicate parameterized by $P$ as follows $ P^upright(bold(E))_xi (e) = upright(bold("Safe"))_P (e) =^triangle.stroked.small.t ...$
+#pause
+- the predicates then are defined inductively e.g.
+$
+  [| Delta hy alpha |]_xi &=^triangle.stroked.small.t xi(alpha) \
+  [| Delta hy () |]_xi (v) &=^triangle.stroked.small.t v = tt \
+  [| Delta hy tau_1 times tau_2 |]_xi (v) &=^triangle.stroked.small.t exists v_1, v_2. v = (v_1, v_2) and [| Delta hy tau_1 |]_xi (v_1) and [| Delta hy tau_2 |]_xi (v_2) \
+  ...
+$
+#pause
+- eventually constructing the fundamental theorem / abstraction theorem
+$
+  forall xi, v s. [| Delta hy Gamma |]_xi (v s) ==> [| Delta hy tau |]^upright(bold(E))_xi (e[v s slash x s])
+$
+
 == Parametricity Translation
 
-*notation*
-- given a type $T$, we notate $[|T|]$ as a logical relation #pause
+*logical relations*
+- in contrast, now we define a binary logical relation for equality / identifications
+- for a type $T$, $[|T|]$ is a logical relation of DTT itself rather than first order logic #pause
 - given a term $t$ we notate $t'$ as a term where every variable $x$ in $t$ is replaced with a fresh variable $x'$ #pause
 
 *parametricity from abstraction theorem*
@@ -510,7 +538,7 @@ $
 - univalent parametricity is abstraction theorem for heterogeneous logical relations
 - with the above $[| dot |]$ is now called the univalent parametricity translation
 
-== Term Translation
+== Abstraction Theorem
 
 - for any term $T : UU_i$ thats also a type, the translation of $T$ as a term is $[T]$ #pause
 - it is a $Sigma$ term with a relation with additional data prescribed by $[|UU_i|]$
