@@ -41,3 +41,4 @@
 #let ua = $upright("ua")$
 #let coe = $upright("coe")$
 #let coh = $upright("coh")$
+#let sqr = square(inset:0.2em)[#square(size:0.3em)]

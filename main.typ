@@ -435,14 +435,38 @@ $
 - Proof transfer automation consist of a meta-program that computes $W$ and $w$ by induction on the structure of $V$ #pause
 - they differ by the relations they can express #pause
 - *generalized rewriting* provide support to setoid based formulations for homogeneous functional relations; $A=B$ #pause
-- *`CoqEAL`* library provide support to refinements specialized to heterogeneous functional relations; $A != B$, in quantifier free type formers #pause
-- we now discuss transfer methods for dependent types and heterogeneous relations in general :)
+- *`CoqEAL`*@refinements library provide support to refinements specialized to heterogeneous functional relations; $A != B$, in quantifier free type formers #pause
+- *`Trocq`* calculus provide support to heterogeneous functional relations in dependent type formers
+
+== More on `CoqEAL`
+
+- lets say our two types are `rat` (proof oriented) and `int * int` (computation oriented)
+```Coq
+Record rat : Set := Rat {
+  valq : int * int;
+  _ : (0 < valq.2) && coprime `|valq.1| `|valq.2| }.
+```#pause
+- `rat` to `int * int` is just `valq` wheras it can fail in the other direction
+```Coq
+Definition Qint_to_rat (r : int * int) : option rat :=
+  if r.2 != 0 then Some (r.1%:Q / r.2%:Q) else None.
+```#pause
+- the functional relation is then
+```Coq
+Definition RRat : rat -> int * int -> Prop :=
+  fun a b => Qint_to_rat b = Some a.
+```
+- we can then define correctness of addition; output holds for the relation too
+```Coq
+R ==> R' : (A -> A') -> (B -> B') -> Prop
+Lemma Rrat_addq : (Rrat ==> Rrat ==> Rrat) +_rat +_int*int.
+```
 
 == Recap Logical Relations
 
-- we have seen logical relations for safety of System F #pause
+- we have seen logical relations for safety of System F @amin #pause
 - the relations are unary; predicates, e.g. $P$ #pause
-- safety then is a predicate parameterized by $P$ as follows $ P^upright(bold(E))_xi (e) = upright(bold("Safe"))_P (e) =^triangle.stroked.small.t ...$
+- safety then is a predicate parameterized by $P$ as follows $ P^upright(bold(E)) (e) = upright(bold("Safe"))_P (e) =^triangle.stroked.small.t ...$
 #pause
 - the predicates then are defined inductively e.g.
 $
@@ -559,12 +583,97 @@ $
 
 = Type Equivalence in Kit
 
-== 
+== Redefining Univalence
 
-- 3.1 ap, isFun, isUmap, symmetrical univalence
-- 3.2 more on the unimap relation
-- 3.3 hierarchical unimap relation
+- we define functional relation and equivalence as follows
+$
+  "isContr"(T) &= Sigma(t : T, Pi(t' : T, Id(T,t,t'))) \
+  "isFun"(R) &= Pi(a : A, "isContr"(Sigma(b : B, R(a,b)))) \
+  A equiv B &= Sigma(R : A -> B -> UU, "isFun"(R) times "isFun"(R^(-1)))
+$
+- the paper proves that voevodsky equivalence can be restated as above; Lemma 3 in @trocq
+$ 
+Sigma(f : A -> B, "isEquiv"(f)) = Sigma(R, "isFun"(R) times "isFun"(R^(-1)))
+$
 
+#pagebreak()
+- a univlent map then is defined as follows
+$
+  "isUmap"(R) = Sigma(
+    &m : A -> B, \
+    &g_1 : Pi(a : A, b : B, Id(B, m(a), b) -> R(a, b)) \
+    &g_2 : Pi(a : A, b : B, R(a, b) -> Id(B, m(a), b)), \
+    &Pi(a : A, b : B, g_1(a,b) comp g_2(a,b) =^dot_dot id)
+  )
+$
+- the paper then proves $"isFun"(R) = "isUmap"(R)$; Lemma 4 in @trocq #pause
+- equivalence as a relation then is defined as
+$
+  sqr^top (A,B) =  Sigma (R : A -> B -> UU_i, "isUmap"(R) times "isUmap"(R^(-1)))
+$
+- thus we can state univalence as follows
+$
+  (A equiv B) equiv sqr^top (A,B)
+$
+
+== General Equivalence
+
+- the index of $sqr^((n,k))$ is a product lattice element, stated more generally
+- $n,k in cal(A)$ are lattice elements of $cal(A) = {0,1,2_a,2_b,3,4}$ in that order
+- except $2_a,2_b$ are incomparable
+$
+  sqr^((n,k)) (A, B) &= Sigma(R : A -> B -> UU, M_n(R) times M_k(R^(-1)))
+$ #pause
+$
+  M_0(R) &= tt \ #pause
+  M_1(R) &= A -> B \ #pause
+  M_(2_a)(R) &= Sigma(m : A -> B, G_(2_a)(m,R)) script("where" G_(2_a)(m,R) = Pi(a : A, b: B, Id(B, m(a), b) -> R(a,b))) \ #pause
+  M_(2_b)(R) &= Sigma(m : A -> B, G_(2_b)(m,R)) script("where" G_(2_b)(m,R) = Pi(a : A, b: B, R(a,b) -> Id(B, m(a), b))) \ #pause
+  M_3(R) &= Sigma(m : A -> B, (G_(2_a)(m,R) times G_(2_b)(m,R))) \ #pause
+  M_4(R) &= Sigma(m : A -> B, Sigma(g_1 : G_(2_a)(m,R), g_2 : G_(2_b)(m,R), g_1(a,b) comp g_2(a,b) =^dot_dot id))
+$
+
+#pagebreak()
+
+- we can now define maps between $A$ and $B$ with different generalities
+- notice $sqr^top = sqr^((4,4))$ is full univalnece #pause
+- moreover $sqr^((m,n)) (A,B) = sqr^((n,m)) (B,A)$ #pause
+- $sqr^((1,0))$ is an arbitrary function $f : A -> B$
+- $sqr^((4,0))$ is just a univalent map in one direction
+- $sqr^((4,2_a))$ is a surjective univalent map with a partial left inverse
+- $sqr^((4,2_b))$ is a injective univalent map with partial right inverse
+- $sqr^((3,3))$ is an isomorphism
+
+#pagebreak()
+
+- revisiting parmetriciy translations, we can restate that we are presupposing the following
+$
+  hyu p_UU^(alpha,beta) : sqr^beta UU UU \
+  "rel"(p_UU^(alpha,beta)) = sqr^alpha
+$
+- however this does not hold for any arbitrary pairs of $alpha,beta$, it only holds for:
+$
+  cal(D)_UU = {(alpha,beta) in cal(A)^2 | alpha = top or beta in {0,1,2_a}^2}
+$
+- note how $p_UU^(top,top) = [UU]$ in our univalent parametricity translation
+
+#pagebreak()
+
+- we then do the same for our type formers i.e. $Pi$
+#figure(proof-tree(rule(
+  $Gamma hy p_Pi^gamma (A_R,B_R) : sqr^gamma (Pi(x : A, B), Pi(x' : A', B'))$,
+  $Gamma hy A_R : sqr^alpha (A, A')$,
+  $Gamma, x : A, x' : A', x_R : A_R (x, x') hy B_R : sqr^beta (B, B')$
+)))
+- TODO how we define $D_Pi$ and the swap
+- TODO we find the following table
+#figure(table(
+  columns: 3,
+  align:(center, center, center),
+  $m$, $D_Pi(m,0)$, $beta$,
+  [0, (0,0), ]
+))
+- and non dependent functions dont require as much information TODO table
 = `Trocq` Calculus
 
 == 
