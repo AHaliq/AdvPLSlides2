@@ -622,11 +622,10 @@ $
     &Pi(a : A, b : B, g_1(a,b) comp g_2(a,b) =^dot_dot id)) && 4 & equiv 
 $
 #align(center)[_we can rewrite $`"isFun"`$ as $`"isUmap"`$; Lemma 4 @trocq _] #pause
-- $equiv$ as a relation in terms of $"isFun"$ thus is defined as
+- $equiv$ as a relation in terms of $"isUmap"$ thus is defined as
 $
   sqr^top (A,B) =  Sigma (R : A -> B -> UU_i, "isUmap"(R) times "isUmap"(R^(-1)))
 $
-- thus we can finally state $equiv$ as follows
 $
   A equiv B = underbrace(sqr^top (A,B), "univalent map")
 $
@@ -728,37 +727,106 @@ $
 $
   D_Pi (gamma) &= (alpha, beta) \
   D_Pi (m,n) &= ((m_A, n_A), (m_B, n_B)) \
+$
+- $p_Pi^((m,n))$ is computed from $p_Pi^((m,0))$ and $p_Pi^((0,n))$ but by symmetry we can compute $p_Pi^((n,0))$
+$
   D_Pi (m,0) &= ((0, n_A), (m_B, 0)) \
   D_Pi (n,0) &= ((0, m_A), (n_B, 0))
 $
-- $p_Pi^((m,n))$ is computed from $p_Pi^((m,0))$ and $p_Pi^((n,0))$ by symmetry
+- thus we only need to compute $p_Pi^((m,0))$
 
 #pagebreak()
-- the `Trocq` meta program then found these to be the minimum required
+- the `Trocq` meta program computed the following for $p_Pi^((m,0))$ and $p_->^((m,0))$
 #figure(table(
-  columns: 5,
-  align:(center, center, center, center, center),
+  columns: 9,
+  align:(center, center, center, center, center, center, center, center, center),
   table.cell(rowspan: 2)[$m$],
-  table.cell(colspan: 2)[$D_Pi$],
-  table.cell(colspan: 2)[$D_->$],
-  $n_A, m_B$, $m_A, n_B$, $n_A, m_B$, $m_A, n_B$,
-  $0$, $(0,0)$, $(0,0)$, $(0,0)$, $(0,0)$, 
-  $1$, $(0,2_a)$, $(1,0)$, table.cell(fill: orange.lighten(80%), $(0,1)$), $(1,0)$,
-  $2_a$, $(0,4)$, $(2_a,0)$, table.cell(fill: orange.lighten(80%), $(0,2_b)$), $(2_a,0)$,
-  $2_b$, $(0,2_a)$, $(2_b,0)$, $(0,2_a)$, $(2_b,0)$,
-  $3$, $(0,4)$, $(3,0)$, table.cell(fill: orange.lighten(80%), $(0,3)$), $(3,0)$,
-  $4$, $(0,4)$, $(4,0)$,$(0,4)$, $(4,0)$
+  table.cell(colspan: 4)[$D_Pi$],
+  table.cell(colspan: 4)[$D_->$],
+  $m_A$, $n_A$, $m_B$, $n_B$, $m_A$, $n_A$, $m_B$, $n_B$,
+  $0$, $0$, $0$, $0$, $0$, $0$, $0$, $0$, $0$, 
+  $1$, $0$, $2_a$, $1$, $0$, $0$, table.cell(fill: orange.lighten(80%), $1$), $1$, $0$,
+  $2_a$, $0$, $4$, $2_a$, $0$, $0$, table.cell(fill: orange.lighten(80%), $2_b$), $2_a$, $0$,
+  $2_b$, $0$, $2_a$, $2_b$, $0$, $0$, $2_a$, $2_b$, $0$,
+  $3$, $0$, $4$, $3$, $0$, $0$, table.cell(fill: orange.lighten(80%), $3$), $3$, $0$,
+  $4$, $0$, $4$, $4$, $0$, $0$, $4$, $4$, $0$
 ))
 - note how the non dependent functions dont require as much information from $p_->^((m,0))$
 - we can imagine the same being done for other type formers
+- thus we can perform proof transfer without needing $(4,4)$; full univalence, in all cases
 = `Trocq` Calculus
 
-== 
+== Raw Parametricity Sequents
 
-- 4.1 raw parametric sequents, abstraction theorem
-- 4.2 univalent parametricity sequents
-- 4.3 annotated tt
-- 4.4 Trocq calculus
+- *parametricity contexts* are duplicate free list of terms with a witness of their relation
+$
+  Xi ::= epsilon | Xi, x ~ x' :: x_R
+$
+- we notate that if $x$ is in the list with $Xi(x) = (x', x_R)$ #pause
+- *parametricity judgement* then come in the form $Xi hy M ~ M' :: M_R$ #pause
+#figure(proof-tree(rule(
+  name: [defn-eq-param],
+  $Xi hy (M',M_R) = (N', N_R)$,
+  $Xi hy M ~ M' :: M_R$,
+  $Xi hy M ~ N' :: N_R$
+)))
+- this way our calculus *internalizes* the parametricity translation $[| dot |]$ from before
+
+#pagebreak()
+
+#figure(proof-tree(rule(
+  name: [param-sort],
+  $Xi hy UU_i ~ UU_i :: lambda A, B : UU_i . A -> B -> UU_i$
+)))
+#figure(proof-tree(rule(
+  name: [param-var],
+  $Xi hy x ~ x' :: x_R$,
+  $Xi(x) = (x',x_R)$,
+  $Xi hy$
+)))
+#pause
+corresponds to raw parametricity term translations
+$
+  [| UU_i |] &= lambda A, A'. A -> A' -> UU_i \
+  [| x |] &= x_R
+$
+#pause
+... likewise for $Pi$
+
+
+#pagebreak()
+
+- $Xi$ provides parametricity whilst $Gamma$ provides typing for the terms; $Gamma(x) = A <=> Gamma hy x : A$
+$
+  Gamma trir Xi <=> ((Xi hy Gamma(x) ~ A' :: A_R) => (Gamma(x') = A' and Gamma(x_R) = A_R(x,x')))
+$ #pause
+- we can then internalize the abstraction theorem as a rule
+#figure(proof-tree(rule(
+  name: [abstr-thm],
+  $Gamma hy M' : A' #h(1em) Gamma hy M_R : A_R (M,M')$,
+  $Gamma trir Xi$,
+  $Gamma hy M : A$,
+  $Xi hy M ~ M' :: M_R$,
+  $Xi hy A ~ A' :: A_R$
+)))
+corresponds to the abstraction theorem for raw parametricity translation
+$
+  Gamma hy t : T ==> &[|Gamma |] hy t : T and \
+  &[|Gamma |] hy t' : T' and \
+  &[|Gamma |] hy [|t|] : [|T|] t t'
+$
+
+== Univalent Parametricity Sequents
+
+section 4.2
+
+== CoC w annotations
+
+section 4.3
+
+== `Trocq` Calculus
+
+section 4.4
 
 = Conclusion
 

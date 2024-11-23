@@ -13,8 +13,8 @@
 #let inr = $upright("inr")$
 #let zero = $upright("zero")$
 #let succ = $upright("succ")$
-#let hy= $tack.r$
-#let hyu= $attach(tack.r, br: u)$
+#let hy = $tack.r$
+#let hyu = $attach(tack.r, br: u)$
 #let type = $upright("type")$
 #let sq = $upright(bold("q"))$
 #let sp = $upright(bold("p"))$
@@ -41,4 +41,5 @@
 #let ua = $upright("ua")$
 #let coe = $upright("coe")$
 #let coh = $upright("coh")$
-#let sqr = square(inset:0.2em)[#square(size:0.3em)]
+#let sqr = square(inset: 0.2em)[#square(size: 0.3em)]
+#let trir = $triangle.stroked.r$
