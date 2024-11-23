@@ -15,6 +15,7 @@
 #let succ = $upright("succ")$
 #let hy = $tack.r$
 #let hyu = $attach(tack.r, br: u)$
+#let hyp = $attach(tack.r, br: +)$
 #let type = $upright("type")$
 #let sq = $upright(bold("q"))$
 #let sp = $upright(bold("p"))$
@@ -43,3 +44,4 @@
 #let coh = $upright("coh")$
 #let sqr = square(inset: 0.2em)[#square(size: 0.3em)]
 #let trir = $triangle.stroked.r$
+#let subt = $prec.curly.eq$

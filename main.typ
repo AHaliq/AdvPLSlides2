@@ -111,7 +111,7 @@
 
 - *Homotopy Type Theory*; the univalence axiom logically performs proof transfer, but not computationally #pause
 - *Higher Observational Type Theory*: we use parametericity translations to define univalence symmetrically using relations expressed in the calculus itself #pause
-- *General Proof Transfer*: allows proof transfer to be done beyond type equivalence, e.g. the type of rational numbers and pairs of natural numbers where the transfer for pairs with corresponding divisor of zero have to be manually rejected, but with `Trocq` is automated
+- *General Proof Transfer*: allows proof transfer to be done beyond type equivalence, e.g. the type of $[0,+ infinity)$ and $[0, +infinity]$ where the transfer for $+infinity$ have to be manually managed, but with `Trocq` is automated
 
 #pagebreak()
 
@@ -700,15 +700,13 @@ moreover
 
 #pagebreak()
 
-- revisiting parmetriciy translations, we can restate the abstraction theorem as follows
-$
-  Gamma hy t : T ==> [| Gamma |] hyu [t] : [| T |] t t'
-$
+- revisiting univalent parmetricity translation, we can restate the abstraction theorem's presuppositions as follows
 $
   hyu p_square^(alpha,beta) : sqr^beta UU UU \
   "rel"(p_square^(alpha,beta)) = sqr^alpha
 $
-- note how $p_square^(top,top)$ corresponds to $[UU]$
+#pause
+- note how $p_square^(top,top)$ corresponds to $[UU]$ i.e. $"rel"([UU]) = sqr^top$ #pause
 - however this does not hold for any arbitrary pairs of $alpha,beta$, it only holds for:
 $
   cal(D)_square = {(alpha,beta) in cal(A)^2 | alpha = top or beta in {0,1,2_a}^2}
@@ -722,12 +720,12 @@ $
   $Gamma hy p_Pi^gamma (A_R,B_R) : sqr^gamma (Pi(x : A, B), Pi(x' : A', B'))$,
   $Gamma hy A_R : sqr^alpha (A, A')$,
   $Gamma, x : A, x' : A', x_R : A_R (x, x') hy B_R : sqr^beta (B, B')$
-)))
+))) #pause
 - $gamma$ determines the minimum required "data" from $alpha, beta$
 $
   D_Pi (gamma) &= (alpha, beta) \
   D_Pi (m,n) &= ((m_A, n_A), (m_B, n_B)) \
-$
+$ #pause
 - $p_Pi^((m,n))$ is computed from $p_Pi^((m,0))$ and $p_Pi^((0,n))$ but by symmetry we can compute $p_Pi^((n,0))$
 $
   D_Pi (m,0) &= ((0, n_A), (m_B, 0)) \
@@ -741,8 +739,8 @@ $
   columns: 9,
   align:(center, center, center, center, center, center, center, center, center),
   table.cell(rowspan: 2)[$m$],
-  table.cell(colspan: 4)[$D_Pi$],
-  table.cell(colspan: 4)[$D_->$],
+  table.cell(colspan: 4)[$D_Pi (m,0)$],
+  table.cell(colspan: 4)[$D_-> (m,0)$],
   $m_A$, $n_A$, $m_B$, $n_B$, $m_A$, $n_A$, $m_B$, $n_B$,
   $0$, $0$, $0$, $0$, $0$, $0$, $0$, $0$, $0$, 
   $1$, $0$, $2_a$, $1$, $0$, $0$, table.cell(fill: orange.lighten(80%), $1$), $1$, $0$,
@@ -791,7 +789,12 @@ $
   [| x |] &= x_R
 $
 #pause
-... likewise for $Pi$
+- likewise for $Pi$
+#figure(proof-tree(rule(
+  $Xi hy Pi(x : A, B) ~ Pi(x' : A', B') :: lambda f, g. Pi(x : A, x' : A', x_R : [|A|](x,x'), B_R (f(x),g(x')))$,
+  $Xi hy A ~ A' :: A_R$,
+  $Xi, x ~ x' :: x_R hy B ~ B' :: B_R$
+)))
 
 
 #pagebreak()
@@ -818,21 +821,78 @@ $
 
 == Univalent Parametricity Sequents
 
-section 4.2
+- we now augment the translation of universes with $sqr^top$
 
-== CoC w annotations
+#figure(proof-tree(rule(
+  name: [UParam-sort],
+  $Xi hyu UU_i ~ UU_i :: p_(square_i)^(top,top)$
+)))
+#figure(proof-tree(rule(
+  name: [UParam-var],
+  $Xi hyu x ~ x' :: x_R$,
+  $Xi(x) = (x',x_R)$,
+  $Xi hy$
+)))
+#pause
+#figure(proof-tree(rule(
+  name: [UParam-Pi],
+  $Xi hyu Pi(x : A, B) ~ Pi(x' : A', B') :: p_Pi^top ( A_R, B_R)$,
+  $Xi hyu A ~ A' :: A_R$,
+  $Xi, x ~ x' :: x_R hyu B ~ B' :: B_R$
+)))
 
-section 4.3
+#pagebreak()
+
+the abstraction theorem thus becomes
+#figure(proof-tree(rule(
+  name: [Uabstr-thm],
+  $Gamma hy M' : A' #h(1em) Xi hyu M_R : "rel"(A_R)(M,M') $,
+  $Gamma trir Xi$,
+  $Gamma hy M : A$,
+  $Xi hyu M ~ M' :: M_R$,
+  $Xi hyu A ~ A' :: A_R$
+)))
+- note that the terms are related by $M_R$ which is a witness of type relations $A_R : "rel"(p_(UU_i)^(top,top)) (A, A')$ which is a witness of univalence $"rel"(p_(UU_i)^(top,top)) = sqr^top (A, A')$
+
+== CoC w annotations ($"CC"_omega^+$)
+
+- now we weaken our univalent parametricity translation for sorts with weaker structures as in our lattice elements $cal(A)$
+- universes are now annotated with $alpha in cal(A)$ as follows $UU_i^alpha$ to govern the amount of information available in parametricity witnesses #pause
+- with annotations we have a new subtyping judgement
+#figure(proof-tree(rule(
+  name: [SubSort],
+  $Gamma hyp UU_i^alpha subt UU_j^beta$,
+  $alpha >= beta$,
+  $i <= j$
+)))
+#figure(proof-tree(rule(
+  name: [SubConv],
+  $Gamma hyp A subt B$,
+  $Gamma hyp A : K$,
+  $Gamma hyp B : K$,
+  $A #math.equiv B$
+)))
+#figure(proof-tree(rule(
+  name: [SubPi],
+  $Gamma hyp Pi(x : A, B) subt Pi(x : A', B')$,
+  $Gamma hyp Pi(x : A, B : UU_i)$,
+  $Gamma hyp A' subt A$,
+  $Gamma, x : A' hyp B subt B'$
+)))
+- where $K := UU_i | Pi(x : A, K)$
 
 == `Trocq` Calculus
 
-section 4.4
+- `Trocq` calculus builds the general univalent parametricity translations internally on $"CC"_omega^+$
+- its objective is for proof transfer rather than to check if terms are in relation
+
 
 = Conclusion
 
 == Example
 
-- section 5
+- recall in our motivation example for proof transfer on types $[0,+infinity)$ and $[0,+infinity]$
+- TODO summable sequences section 5
 
 = Bibliography <touying:hidden>
 
