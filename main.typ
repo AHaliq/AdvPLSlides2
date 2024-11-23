@@ -543,7 +543,7 @@ $
       a
   #edge("rr", $R$, "<->", shift: 0pt, label-anchor: "south", label-sep: 0em, bend: 30deg)
   #edge("rr", $p : Id(A,a,attach(arrow.b, br: e)(b))$, "<->", shift: 0pt, label-anchor: "north", label-sep: 0em, bend: -30deg)
-  #edge((1,-0.25),(1,0.25), $[| UU_i |]$, "<-->")
+  #edge((1,-0.25),(1,0.25), $[| UU_i |]$, "<..>")
   & &
 b
     $,
@@ -559,16 +559,16 @@ $
     cell-size: 10mm,
     $
       A
-  #edge("rr", $attach(arrow.t arrow.b, br: e)$, "<-->", shift: 0pt, label-anchor: "south", label-sep: 0em, bend: 30deg)
-  #edge("rr", $[| UU_i |]$, "<-->", shift: 0pt, label-anchor: "north", label-sep: 0em, bend: -30deg)
-  #edge((1,-0.25),(1,0.25), $u$, "<-->")
+  #edge("rr", $equiv$, "<-->", shift: 0pt, label-anchor: "south", label-sep: 0em, bend: 30deg)
+  #edge("rr", $[| UU_i |]$, "<..>", shift: 0pt, label-anchor: "north", label-sep: 0em, bend: -30deg)
+  #edge((1,-0.25),(1,0.25), $$, "=")
   & &
 B
     $,
   ),
 )
 $
-  [| UU_i |] A B equiv (A equiv B)
+  [| UU_i |] A B = (A equiv B)
 $
 
 #pagebreak()
@@ -637,7 +637,7 @@ $
   repeat: 2,
   self => [
     #let (uncover, only, alternatives) = utils.methods(self)
-- the index of $sqr^((n,k))$ is a product lattice element of $cal(A)$
+- the index of $sqr^((n,k))$ is a product lattice element of $cal(A)^2$ where $cal(A)$ is as follows
 #figure(
   cetz.canvas({
     import cetz.draw: *
@@ -687,7 +687,7 @@ $
 
 #pagebreak()
 
-- we can now define maps between $A$ and $B$ with different generalities
+- we can now define maps between $A$ and $B$ in different generalities of equality
 $
 sqr^((m,n)) (A,B) &= sqr^((n,m)) (B,A) \ #pause
 sqr^top = sqr^((4,4)) &= A equiv B \ #pause
@@ -714,7 +714,7 @@ $
 $
   cal(D)_square = {(alpha,beta) in cal(A)^2 | alpha = top or beta in {0,1,2_a}^2}
 $
-- $beta$ depends on univalence / $alpha=(4,4)$ if $beta in {0,1,2_a}^2$; (paper didn't explain why)
+- $beta$ depends on univalence / $alpha=(4,4)$ if $beta in {0,1,2_a}^2$; insufficient "data" otherwise
 
 #pagebreak()
 
@@ -724,15 +724,33 @@ $
   $Gamma hy A_R : sqr^alpha (A, A')$,
   $Gamma, x : A, x' : A', x_R : A_R (x, x') hy B_R : sqr^beta (B, B')$
 )))
-- TODO how we define $D_Pi$ and the swap
-- TODO we find the following table
+- $gamma$ determines the minimum required "data" from $alpha, beta$
+$
+  D_Pi (gamma) &= (alpha, beta) \
+  D_Pi (m,n) &= ((m_A, n_A), (m_B, n_B)) \
+  D_Pi (m,0) &= ((0, n_A), (m_B, 0)) \
+  D_Pi (n,0) &= ((0, m_A), (n_B, 0))
+$
+- $p_Pi^((m,n))$ is computed from $p_Pi^((m,0))$ and $p_Pi^((n,0))$ by symmetry
+
+#pagebreak()
+- the `Trocq` meta program then found these to be the minimum required
 #figure(table(
-  columns: 3,
-  align:(center, center, center),
-  $m$, $D_Pi(m,0)$, $beta$,
-  [0, (0,0), ]
+  columns: 5,
+  align:(center, center, center, center, center),
+  table.cell(rowspan: 2)[$m$],
+  table.cell(colspan: 2)[$D_Pi$],
+  table.cell(colspan: 2)[$D_->$],
+  $n_A, m_B$, $m_A, n_B$, $n_A, m_B$, $m_A, n_B$,
+  $0$, $(0,0)$, $(0,0)$, $(0,0)$, $(0,0)$, 
+  $1$, $(0,2_a)$, $(1,0)$, table.cell(fill: orange.lighten(80%), $(0,1)$), $(1,0)$,
+  $2_a$, $(0,4)$, $(2_a,0)$, table.cell(fill: orange.lighten(80%), $(0,2_b)$), $(2_a,0)$,
+  $2_b$, $(0,2_a)$, $(2_b,0)$, $(0,2_a)$, $(2_b,0)$,
+  $3$, $(0,4)$, $(3,0)$, table.cell(fill: orange.lighten(80%), $(0,3)$), $(3,0)$,
+  $4$, $(0,4)$, $(4,0)$,$(0,4)$, $(4,0)$
 ))
-- and non dependent functions dont require as much information TODO table
+- note how the non dependent functions dont require as much information from $p_->^((m,0))$
+- we can imagine the same being done for other type formers
 = `Trocq` Calculus
 
 == 
