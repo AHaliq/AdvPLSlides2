@@ -16,6 +16,7 @@
 #let hy = $tack.r$
 #let hyu = $attach(tack.r, br: u)$
 #let hyp = $attach(tack.r, br: +)$
+#let hyt = $attach(tack.r, br: t)$
 #let type = $upright("type")$
 #let sq = $upright(bold("q"))$
 #let sp = $upright(bold("p"))$
