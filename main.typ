@@ -422,7 +422,7 @@ $
     $,
   ),
 )
-#align(center)[_$R_T$ is a type equivalence between $bb(N)$ and $N$ transporting $V(a)$ to $W(a)$ along this equivalence_]
+#align(center)[_$R_T$ is a type equivalence between $bb(N)$ and $N$ transporting $V(a)$ to $W(b)$ along this equivalence_]
 
 #pagebreak()
 
@@ -548,12 +548,12 @@ $
   diagram(
     cell-size: 10mm,
     $
-      a
+      A
   #edge("rr", $R$, "<->", shift: 0pt, label-anchor: "south", label-sep: 0em, bend: 30deg)
   #edge("rr", $p : Id(A,a,attach(arrow.b, br: e)(b))$, "<->", shift: 0pt, label-anchor: "north", label-sep: 0em, bend: -30deg)
   #edge((1,-0.25),(1,0.25), $[| UU_i |]$, "<..>")
   & &
-b
+B
     $,
   ),
 )
@@ -563,34 +563,15 @@ $
   |] A B = Sigma(R : A -> B -> UU_i, e : A equiv B, Pi(a : A, b : B, R a b equiv Id(A, a, attach(arrow.b, br: e)(b))))
 $
 #align(center)[_ $A$ and $B$ are related on $[| UU_i |]$ if for some $R$ and $e$, $R$ is equivalent to $Id(A,a, attach(arrow.b, br:e)(b))$_]
-#pause
-#figure(
-  diagram(
-    cell-size: 10mm,
-    $
-      A
-  #edge("rr", $equiv$, "<-->", shift: 0pt, label-anchor: "south", label-sep: 0em, bend: 30deg)
-  #edge("rr", $[| UU_i |]$, "<..>", shift: 0pt, label-anchor: "north", label-sep: 0em, bend: -30deg)
-  #edge((1,-0.25),(1,0.25), $$, "=")
-  & &
-B
-    $,
-  ),
-)
-$
-  [| UU_i |] A B = (A equiv B)
-$
-
-#pagebreak()
 
 - univalent parametricity is abstraction theorem for heterogeneous logical relations
-- with the above $[| dot |]$ is now called the univalent parametricity translation
+- with the above $[| dot |]$ is now called the *univalent parametricity translation*
 
 == Abstraction Theorem
 
-- for any term $T : UU_i$ thats also a type, the translation of $T$ as a term is $[T]$ #pause
-- it is a $Sigma$ term with a relation with additional data prescribed by $[|UU_i|]$
-- in other words: $"rel"([T]) = [|T|]$, where $"rel"$ projects the relation #pause
+- for any term $T : UU_i$ thats also a type, the *term translation* of $T$ is $[T]$ #pause
+  - it is a $Sigma$ term with a relation with additional data prescribed by $[|UU_i|]$
+  - $"rel"([T]) = [|T|]$, where $"rel"$ projects the relation #pause
 - we notate $hyu$ as a typing judgement assuming univalence
 
 *abstraction theorem for univalent parametricity translation*
@@ -609,6 +590,7 @@ $
 
 == Redefining Univalence
 
+- lets make the definition of univalence symmetrical in terms of relations
 $
   "isContr"(T) &= Sigma(t : T, Pi(t' : T, Id(T,t,t'))) \ #pause
   "isFun"(R) &= Pi(a : A, "isContr"(Sigma(b : B, R(a,b)))) \ #pause
@@ -634,7 +616,7 @@ $
     &Pi(a : A, b : B, g_1(a,b) comp g_2(a,b) =^dot_dot id)) && 4 & equiv
 $
 #align(center)[_we can rewrite $`"isFun"`$ as $`"isUmap"`$; Lemma 4 @trocq _] #pause
-- $equiv$ as a relation in terms of $"isUmap"$ thus is defined as
+- $equiv$ as a type equivalence relation $sqr^top$ in terms of $"isUmap"$ thus is defined
 $
   sqr^top (A,B) = Sigma (R : A -> B -> UU_i, "isUmap"(R) times "isUmap"(R^(-1)))
 $
@@ -648,7 +630,7 @@ $
   repeat: 2,
   self => [
     #let (uncover, only, alternatives) = utils.methods(self)
-    - the index of $sqr^((n,k))$ is a product lattice element of $cal(A)^2$ where $cal(A)$ is as follows
+    - $sqr^((n,k))$ generalizes over a product lattice element of $cal(A)^2$ where $cal(A)$ is as follows
     #figure(
       cetz.canvas({
         import cetz.draw: *
@@ -703,7 +685,7 @@ $
 
 #pagebreak()
 
-- we can now define maps between $A$ and $B$ in different generalities of equality
+- we have a general type equality relation on $A$ and $B$ as follows
 $
   sqr^((m,n)) (A,B) &= sqr^((n,m)) (B,A) \ #pause
 sqr^top = sqr^((4,4)) &= A equiv B \ #pause
@@ -712,8 +694,8 @@ sqr^((1,0)) &= A -> B \ #pause
 $
 moreover
 - $sqr^((4,0))$ is a univalent map in just the direction from $A$ to $B$
-- $sqr^((4,2_a))$ is a surjective univalent map with a partial left inverse; id on $R$
-- $sqr^((4,2_b))$ is a injective univalent map with partial right inverse; id on $Id$
+- $sqr^((4,2_a))$ is a surjective univalent map with a partial left inverse
+- $sqr^((4,2_b))$ is a injective univalent map with partial right inverse
 
 #pagebreak()
 
@@ -954,24 +936,36 @@ the abstraction theorem thus becomes
 
 #pagebreak()
 
-#figure(proof-tree(rule(
-  name: [Sort+],
-  $Gamma hyp UU_i^alpha : UU_(i+1)^beta$,
-  $(alpha, beta) in cal(D)_square$
-)))
-#figure(proof-tree(rule(
-  name: [Conv+],
-  $Gamma hyp M : B$,
-  $Gamma hyp M : A$,
-  $Gamma hyp A subst B$
-)))
-#figure(proof-tree(rule(
-  name: [Pi+],
-  $Gamma hyp Pi(x : A, B : UU_i^gamma)$,
-  $Gamma hyp A : UU_i^alpha$,
-  $Gamma, x : A hyp B : UU_i^beta$,
-  $D_Pi (gamma) = (alpha, beta)$
-)))
+#figure(
+  proof-tree(
+    rule(
+      name: [Sort+],
+      $Gamma hyp UU_i^alpha : UU_(i+1)^beta$,
+      $(alpha, beta) in cal(D)_square$,
+    ),
+  ),
+)
+#figure(
+  proof-tree(
+    rule(
+      name: [Conv+],
+      $Gamma hyp M : B$,
+      $Gamma hyp M : A$,
+      $Gamma hyp A subt B$,
+    ),
+  ),
+)
+#figure(
+  proof-tree(
+    rule(
+      name: [Pi+],
+      $Gamma hyp Pi(x : A, B : UU_i^gamma)$,
+      $Gamma hyp A : UU_i^alpha$,
+      $Gamma, x : A hyp B : UU_i^beta$,
+      $D_Pi (gamma) = (alpha, beta)$,
+    ),
+  ),
+)
 - we have annotated our types with $cal(A)^2$
 
 == `Trocq` Calculus
@@ -985,59 +979,79 @@ $
 $
 - thus judgements are 4-ary relation $(M,A,M',M_R)$, term, type, term, param witness
 $
-Delta hyt M @ A ~ M' ∵ M_R
+  Delta hyt M @ A ~ M' ∵ M_R
 $
-#pause
+
+#pagebreak()
 - we have a weaken operation that forgets fields from $M_p$ to $M_q$ where $p >= q$ in $cal(A)$
 $
   attach(arrows.bb, br: (p,q), tr: (m,n)) angle.l R, M^->, M^<- angle.r := angle.l R, attach(arrow.b, tr: m, br: p) M^->, attach(arrow.b, tr: n, br: q) M^<- angle.r
-$
-#pause
+$ #pause
 - weaken on parametricity witnesses $attach(arrow.b.double, tr: T, br: U)$ is defined inductively
 $
-  attach(arrow.b.double, tr: UU_i^alpha, br: UU_i^alpha') t_R = attach(arrows.bb, tr: alpha, br: alpha') t_R #h(1em)
-  attach(arrow.b.double, tr: A, br: A') M_R = M_R #h(1em)
-  attach(arrow.b.double, tr: Pi(x : A, B), br: Pi(x : A', B')) M_R = lambda x, x', x_R. attach(arrows.bb, tr: B, br: B') (M_R (x,x',attach(arrow.b.double, tr: A', br: A) x_R)) 
+  attach(arrow.b.double, tr: UU_i^alpha, br: UU_i^alpha') t_R &= attach(arrows.bb, tr: alpha, br: alpha') t_R \
+  attach(arrow.b.double, tr: A, br: A') M_R &= M_R \
+  attach(arrow.b.double, tr: Pi(x : A, B), br: Pi(x : A', B')) M_R &= lambda x, x', x_R. attach(arrows.bb, tr: B, br: B') (M_R (x,x',attach(arrow.b.double, tr: A', br: A) x_R))
 $
 
 #pagebreak()
 
-#figure(proof-tree(rule(
-  name: [TrocqSort],
-  $Delta hyt UU_i^alpha @ UU_(i+1)^beta ~ UU_i^alpha ∵ p_(UU_i)^(alpha,beta)$,
-  $(alpha, beta) in cal(D)_square$
-))) #pause
-#figure(proof-tree(rule(
-  name: [TrocqVar],
-  $Delta hyt x @ A ~ x' ∵ x_R$,
-  $(x, A, x', x_R) in Delta(x)$,
-  $gamma(Delta) hyp$
-))) #pause
-#figure(proof-tree(rule(
-  name: [TrocqPi],
-  $Delta hyt Pi(x : A, B) @ UU_i^delta ~ Pi(x' : A', B') ∵ p_Pi^delta (A_R,B_R)$,
-  $(alpha, beta) = cal(D)_Pi (delta)$,
-  $Delta hyt A @ UU_i^alpha ~ A' ∵ A_R$,
-  $Delta, x @ A ~ x' ∵ x_R hyt B @ UU_i^beta ~ B' ∵ B_R$
-))) #pause
-#figure(proof-tree(rule(
-  name: [TrocqConv],
-  $Delta hyt M @ B ~ M' ∵ attach(arrow.b.double, br: B, tr: A) M_R$,
-  $Delta hyt M @ A ~ M' ∵ M_R$,
-  $gamma(Delta) hyp A subt B$
-)))
+#figure(
+  proof-tree(
+    rule(
+      name: [TrocqSort],
+      $Delta hyt UU_i^alpha @ UU_(i+1)^beta ~ UU_i^alpha ∵ p_(UU_i)^(alpha,beta)$,
+      $(alpha, beta) in cal(D)_square$,
+    ),
+  ),
+) #pause
+#figure(
+  proof-tree(
+    rule(
+      name: [TrocqVar],
+      $Delta hyt x @ A ~ x' ∵ x_R$,
+      $(x, A, x', x_R) in Delta(x)$,
+      $gamma(Delta) hyp$,
+    ),
+  ),
+) #pause
+#figure(
+  proof-tree(
+    rule(
+      name: [TrocqPi],
+      $Delta hyt Pi(x : A, B) @ UU_i^delta ~ Pi(x' : A', B') ∵ p_Pi^delta (A_R,B_R)$,
+      $(alpha, beta) = cal(D)_Pi (delta)$,
+      $Delta hyt A @ UU_i^alpha ~ A' ∵ A_R$,
+      $Delta, x @ A ~ x' ∵ x_R hyt B @ UU_i^beta ~ B' ∵ B_R$,
+    ),
+  ),
+) #pause
+#figure(
+  proof-tree(
+    rule(
+      name: [TrocqConv],
+      $Delta hyt M @ B ~ M' ∵ attach(arrow.b.double, br: B, tr: A) M_R$,
+      $Delta hyt M @ A ~ M' ∵ M_R$,
+      $gamma(Delta) hyp A subt B$,
+    ),
+  ),
+)
 
 #pagebreak()
 
 - thus the abstraction theorem for `Trocq`:
-#figure(proof-tree(rule(
-  name: [TrocqAbs-Thm],
-  $gamma(Delta) hyp M' : A' #h(2em) gamma(Delta) hyp M_R : "rel"(A_R)(M, M')$,
-  $gamma(Delta) hyp$,
-  $gamma(Delta) hyp M : A$,
-  $Delta hyt M @ A ~ M' ∵ M_R$,
-  $Delta hyt A @ UU_i^alpha ~ A' ∵ A_R$
-)))
+#figure(
+  proof-tree(
+    rule(
+      name: [TrocqAbs-Thm],
+      $gamma(Delta) hyp M' : A' #h(2em) gamma(Delta) hyp M_R : "rel"(A_R)(M, M')$,
+      $gamma(Delta) hyp$,
+      $gamma(Delta) hyp M : A$,
+      $Delta hyt M @ A ~ M' ∵ M_R$,
+      $Delta hyt A @ UU_i^alpha ~ A' ∵ A_R$,
+    ),
+  ),
+)
 
 == Constants
 
@@ -1045,31 +1059,90 @@ $
 - crucially it can be assigned several different annotations $T_c subset cal(T)_("CC"_omega^+)$; i.e. polymorphic on $alpha$
 - thus translation for each annotation possible is provided; $cal(D)_c$
 
-#figure(proof-tree(rule(
-  name: [Const+],
-  $Gamma hy c : A$,
-  $c in cal(C)$,
-  $A in T_c$
-)))
-#figure(proof-tree(rule(
-  name: [TrocqConst],
-  $Delta hy c @ A ~ c' ∵ c_R$,
-  $D_c (A) = (c', c_R)$
-)))
+#figure(
+  proof-tree(
+    rule(
+      name: [Const+],
+      $Gamma hy c : A$,
+      $c in cal(C)$,
+      $A in T_c$,
+    ),
+  ),
+)
+#figure(
+  proof-tree(
+    rule(
+      name: [TrocqConst],
+      $Delta hy c @ A ~ c' ∵ c_R$,
+      $D_c (A) = (c', c_R)$,
+    ),
+  ),
+)
 
 = Conclusion
 
 == Summary
 
+- we use logical relations to relate terms under equality; $[| A |] t t'$
+- relations on type equality is generalized with $sqr^alpha$
 - *Raw Parametricity Sequents* internalize parametricity with $x ~ x' ∵ x_R$ judgements
-- *Univalent Parametricity Sequents* internalizes the generalized equality relation $sqr^alpha$ 
+- *Univalent Parametricity Sequents* internalizes the generalized equality relation $sqr^alpha$
 - *$"CC"_omega^+$* annotates types with $alpha$ along with a subtyping operator $subt$ for the annotations
 - *`Trocq`* adds type information to the internalized $sqr^alpha$ judgements necessary to automate proof transfer along with weaken operations $arrows.bb, arrow.b.double$; _think down casting to appropriate $cal(A)$_
 
 == Example
 
-- recall in our motivation example for proof transfer on types $[0,+infinity)$ and $[0,+infinity]$
-- TODO summable sequences section 5
+- recall in our motivation example for proof transfer on types $[0,+infinity)$ and $[0,+infinity]$ #pause
+- $u : NN -> [0, +infinity)$ is a sequence of non negative real numbers #pause
+- $u$ is summable when $Sigma u = (Sigma_(k=0)^n u_k)_(n in NN)$ has a finite limit #pause
+- algebraic operations (e.g. commutativity) require a proof of summability for each step #pause
+- the standard approach assigns a default value to the case of an infinite sum thus extending the domain to $[0,+infinity]$ #pause
+- with this domain a limit is always defined #pause
+- we prove in the extended domain and proof transfer to the original #pause
+- lets automate this with `Trocq` for addition
+
+#pagebreak()
+#figure(grid(
+  columns: 3,
+  align: (center + horizon, center + horizon),
+figure(
+  diagram(
+    cell-size: 5mm,
+    $
+      dash(RR)_(>=0)
+    #edge("r", [`truncate`$\ ^(2_b)$], bend: 30deg, "->") &
+  RR_(>=0)
+    #edge("l", [`Fin`$\ ^4$], bend: 30deg, "->")
+    $,
+  ),
+),
+h(3em),
+figure(
+  diagram(
+    cell-size: 5mm,
+    $
+      #[`summable`]
+    #edge("r", [`to_seq`$\ ^(2_b)$], bend: 30deg, "->") &
+  #[`seq`$\ _(dash(RR)_(>=0))$]
+    #edge("l", [`seq_extend`$\ ^4$], bend: 30deg, "->")
+    $,
+  ),
+)
+))
+
+$
+  #[`Definition `] Sigma_(RR_(>= 0)) (u : #[`summable`]) : RR_(>=0) := #[`truncate`] (Sigma_(dash(RR)_(>=0)) (#[`seq_extend`] (u)))
+$
+#figure(
+  diagram(
+    cell-size: 5mm,
+    $
+      Sigma_(dash(RR)_(>=0)) (u + v) = Sigma_(dash(RR)_(>=0)) (u) + Sigma_(dash(RR)_(>=0)) (v)
+    #edge("r", [`trocq`], "->") &
+  Sigma_(RR_(>=0)) (u + v) = Sigma_(RR_(>=0)) (u) + Sigma_(RR_(>=0)) (v)
+    $,
+  ),
+)
 
 = Bibliography <touying:hidden>
 
